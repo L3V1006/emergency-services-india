@@ -19,8 +19,8 @@ async function askAI() {
     appendMessage('user', text);
     input.value = '';
 
-    // Fixed AI logic with correct payload structure
-    const prompt = `System: You are an Emergency First-Aid Assistant. Give VERY SHORT (under 50 words), bulleted tips. Always start with: 'Call 112 immediately.' \nUser Question: ${text}`;
+    // System prompt helps the AI stay focused and safe
+    const prompt = `System Instructions: You are a First-Aid Assistant. Give VERY SHORT (under 50 words), bulleted tips. Always start with: 'Call 112/102 immediately.' \nUser Question: ${text}`;
 
     try {
         const resp = await fetch(GEMINI_URL, {
@@ -30,12 +30,17 @@ async function askAI() {
                 contents: [{ parts: [{ text: prompt }] }]
             })
         });
+
+        if (!resp.ok) {
+            throw new Error(`API Status: ${resp.status}`);
+        }
+
         const data = await resp.json();
         const responseText = data.candidates[0].content.parts[0].text;
         appendMessage('ai', responseText);
     } catch (e) {
-        console.error(e);
-        appendMessage('ai', "Error connecting. Please check internet or call 112.");
+        console.error("AI Error Details:", e);
+        appendMessage('ai', "Error connecting. Please check internet or call 112 directly.");
     }
 }
 
@@ -48,7 +53,7 @@ function appendMessage(sender, text) {
     container.scrollTop = container.scrollHeight;
 }
 
-// --- DISTANCE & MAP ---
+// --- DISTANCE & MAP LOGIC ---
 function getDistance(lat1, lon1, lat2, lon2) {
     const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -95,8 +100,10 @@ async function findEmergency(type) {
         results.forEach(item => {
             const dist = item.distance.toFixed(1);
             const name = item.tags.name || "Emergency Point";
-            // Correct template literal syntax
-            const directionsUrl = `http://googleusercontent.com/maps.google.com/?q=${item.lat},${item.lon}`;
+            
+            // Standard Navigation URL
+            const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lon}`;
+            
             L.marker([item.lat, item.lon]).addTo(markersLayer).bindPopup(`<b>${name}</b><br>${dist} km`);
 
             const li = document.createElement('li');
@@ -132,7 +139,7 @@ document.getElementById('results-panel').addEventListener('scroll', () => {
 });
 
 async function sendSOS() {
-    const url = `http://googleusercontent.com/maps.google.com/?q=${currentPos.lat},${currentPos.lon}`;
+    const url = `https://www.google.com/maps/search/?api=1&query=${currentPos.lat},${currentPos.lon}`;
     if (navigator.share) await navigator.share({ title: 'SOS', text: `Help! My location: ${url}` });
     else window.open(`https://wa.me/?text=${encodeURIComponent(url)}`, '_blank');
 }
