@@ -9,15 +9,11 @@ const manualFireStations = [
     { name: "Barasat Fire Station", lat: 22.7230, lon: 88.4870, addr: "Barasat, North 24 Pgs", phone: "033-2552-3222" },
     { name: "Naihati Fire Station", lat: 22.8913, lon: 88.4239, addr: "Naihati, North 24 Pgs", phone: "033-2581-2222" },
     { name: "Dum Dum Fire Station", lat: 22.6215, lon: 88.3934, addr: "Dum Dum Rd, Kolkata", phone: "033-2551-3222" },
-    { name: "Bidhannagar Fire Station", lat: 22.5867, lon: 88.4170, addr: "Sector V, Salt Lake", phone: "033-2357-3222" },
-    { name: "Kolkata Fire HQ", lat: 22.5535, lon: 88.3540, addr: "Mirza Ghalib St, Kolkata", phone: "033-2252-1122" },
-    { name: "Howrah Fire Station", lat: 22.5833, lon: 88.3333, addr: "G.T. Road, Howrah", phone: "033-2638-3222" },
-    { name: "Kalyani Fire Station", lat: 22.9751, lon: 88.4345, addr: "Kalyani, Nadia", phone: "033-2582-8222" }
+    { name: "Howrah Fire Station", lat: 22.5833, lon: 88.3333, addr: "G.T. Road, Howrah", phone: "033-2638-3222" }
 ];
 
 const manualAmbulances = [
     { name: "Barrackpore Municipality Ambulance", lat: 22.76, lon: 88.37, addr: "Town Hall, Barrackpore", phone: "033-2592-0405" },
-    { name: "B.N. Bose Hospital Ambulance", lat: 22.758, lon: 88.372, addr: "Barrackpore HQ", phone: "033-2592-0035" },
     { name: "Kolkata Emergency Ambulance", lat: 22.57, lon: 88.43, addr: "Salt Lake", phone: "9830088888" }
 ];
 
@@ -60,7 +56,6 @@ async function searchLocation() {
             currentPos.lon = parseFloat(data[0].lon);
             updateMapToPos(query);
             markersLayer.clearLayers();
-            document.getElementById('nearby-list').innerHTML = `<li class="placeholder">Now select a service for ${query}.</li>`;
         }
     } catch (e) { console.error(e); }
 }
@@ -85,7 +80,7 @@ async function findEmergency(type) {
         if (type === 'ambulance') results = [...results, ...manualAmbulances];
 
         list.innerHTML = "";
-        if (results.length === 0) { list.innerHTML = `<li class="placeholder">No ${type} found in 50km.</li>`; return; }
+        if (results.length === 0) { list.innerHTML = `<li class="placeholder">No ${type} found.</li>`; return; }
 
         results.forEach(item => {
             const name = item.tags ? (item.tags.name || `Unnamed ${type}`) : item.name;
@@ -100,13 +95,12 @@ async function findEmergency(type) {
 
             const li = document.createElement('li');
             li.className = "result-item";
-            
-            let callButton = phone ? `<a href="tel:${phone}" class="call-link">📞 CALL NOW: ${phone}</a>` : '';
+            let callBtn = phone ? `<a href="tel:${phone}" class="call-link">📞 CALL: ${phone}</a>` : '';
 
             li.innerHTML = `
                 <strong>${name} ${item.tags ? '' : '✅'}</strong>
                 <small>${addr}</small>
-                ${callButton}
+                ${callBtn}
                 <a href="${directionsUrl}" target="_blank" class="direction-link">📍 GET DIRECTIONS</a>
             `;
             list.appendChild(li);
@@ -116,28 +110,22 @@ async function findEmergency(type) {
 
 async function sendSOS() {
     const googleMapsUrl = `http://googleusercontent.com/maps.google.com/?q=${currentPos.lat},${currentPos.lon}`;
-    const msg = `EMERGENCY! I need help. My current location is: ${googleMapsUrl}`;
     if (navigator.share) {
-        await navigator.share({ title: 'SOS EMERGENCY', text: msg });
+        await navigator.share({ title: 'SOS', text: `Help! Location: ${googleMapsUrl}` });
     } else {
-        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        window.open(`https://wa.me/?text=${encodeURIComponent(googleMapsUrl)}`, '_blank');
     }
 }
 
 function openModal() { document.getElementById("helpModal").style.display = "block"; }
 function closeModal() { document.getElementById("helpModal").style.display = "none"; }
-window.onclick = function(event) {
-    let modal = document.getElementById("helpModal");
-    if (event.target == modal) modal.style.display = "none";
-}
 
-// --- NEW: SIDEBAR SCROLL LISTENER ---
+// --- FIXED SCROLL LISTENER ---
 const resultsPanel = document.getElementById('results-panel');
-const sidebar = document.querySelector('.sidebar');
+const sidebar = document.getElementById('main-sidebar');
 
 resultsPanel.addEventListener('scroll', () => {
-    // If the user scrolls down more than 30px
-    if (resultsPanel.scrollTop > 30) {
+    if (resultsPanel.scrollTop > 40) {
         sidebar.classList.add('collapsed');
     } else {
         sidebar.classList.remove('collapsed');
