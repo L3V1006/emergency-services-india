@@ -37,6 +37,13 @@
                     <button onclick="findEmergency('fire_station')" class="btn fire">
                         <span class="icon">🚒</span> Fire Dept
                     </button>
+                    <button onclick="findEmergency('ambulance')" class="btn ambulance">
+                        <span class="icon">🚑</span> Ambulance
+                    </button>
+                </div>
+
+                <div class="quick-call-container">
+                    <a href="tel:102" class="call-btn">📞 CALL AMBULANCE (102)</a>
                 </div>
 
                 <button onclick="sendSOS()" class="sos-btn">
@@ -63,7 +70,7 @@
 
     <div id="helpModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
+            <span class="close" onclick="closeModal()">×</span>
             <h2>Submit Help Location</h2>
             <p>Help us verify and add more emergency points.</p>
             
@@ -73,7 +80,7 @@
                     <option value="hospital">Hospital (Govt/Private)</option>
                     <option value="police">Police Station</option>
                     <option value="fire">Fire Department</option>
-                    <option value="blood_bank">Blood Bank</option>
+                    <option value="ambulance">Ambulance Service</option>
                 </select>
 
                 <label>Name of Facility</label>

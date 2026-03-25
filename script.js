@@ -77,25 +77,30 @@ async function findEmergency(type) {
     list.innerHTML = `<li class="placeholder">Searching for ${type}...</li>`;
     markersLayer.clearLayers();
 
-    const query = `[out:json];node["amenity"="${type}"](around:50000,${currentPos.lat},${currentPos.lon});out;`;
+    // Query both "ambulance" and "ambulance_station" if type is ambulance
+    let overpassType = type;
+    if (type === 'ambulance') overpassType = 'ambulance_station';
+
+    const query = `[out:json];node["amenity"="${overpassType}"](around:50000,${currentPos.lat},${currentPos.lon});out;`;
     const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
 
     try {
         const response = await fetch(url);
         const data = await response.json();
         let results = data.elements;
+        
         if (type === 'fire_station') results = [...results, ...manualFireStations];
 
         list.innerHTML = "";
         if (results.length === 0) { list.innerHTML = `<li class="placeholder">No ${type} found in 50km.</li>`; return; }
 
         results.forEach(item => {
-            const name = item.tags ? (item.tags.name || "Unnamed Station") : item.name;
+            const name = item.tags ? (item.tags.name || `Unnamed ${type}`) : item.name;
             const addr = item.tags ? (item.tags["addr:street"] || "Near your area") : item.addr;
             const lat = item.lat;
             const lon = item.lon;
             
-            // --- FIXED DIRECTIONS LINK ---
+            // FIXED: Standard Google Maps URL
             const directionsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
 
             L.marker([lat, lon]).addTo(markersLayer).bindPopup(`<b>${name}</b><br><a href="${directionsUrl}" target="_blank" class="popup-btn" style="color:white; background:#3b82f6; padding:5px; border-radius:4px; text-decoration:none; display:inline-block; margin-top:5px;">Directions</a>`);
@@ -109,7 +114,7 @@ async function findEmergency(type) {
 }
 
 async function sendSOS() {
-    // --- FIXED SOS LINK ---
+    // FIXED: SOS Google Maps Link
     const googleMapsUrl = `https://www.google.com/maps?q=${currentPos.lat},${currentPos.lon}`;
     const msg = `EMERGENCY! I need help. My current location is: ${googleMapsUrl}`;
 
@@ -120,7 +125,6 @@ async function sendSOS() {
     }
 }
 
-// MODAL CONTROLS
 function openModal() { document.getElementById("helpModal").style.display = "block"; }
 function closeModal() { document.getElementById("helpModal").style.display = "none"; }
 window.onclick = function(event) {
