@@ -72,20 +72,26 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal()">×</span>
             <h2>Submit Help Location</h2>
+            <p>Help us verify and add more emergency points.</p>
+            
             <form action="https://formspree.io/f/mjgpbank" method="POST">
                 <label>Category</label>
                 <select name="category" required>
-                    <option value="hospital">Hospital</option>
+                    <option value="hospital">Hospital (Govt/Private)</option>
                     <option value="police">Police Station</option>
                     <option value="fire">Fire Department</option>
                     <option value="ambulance">Ambulance Service</option>
                 </select>
-                <label>Name</label>
-                <input type="text" name="facility_name" placeholder="Name" required>
-                <label>Phone</label>
-                <input type="tel" name="contact_phone" placeholder="Phone" required>
-                <label>Location</label>
-                <textarea name="location_details" rows="3" placeholder="Address" required></textarea>
+
+                <label>Name of Facility</label>
+                <input type="text" name="facility_name" placeholder="e.g. Barrackpore Ambulance Service" required>
+
+                <label>Contact Number (Emergency Line)</label>
+                <input type="tel" name="contact_phone" placeholder="e.g. 033-XXXX-XXXX or mobile" required>
+
+                <label>Exact Location / Address</label>
+                <textarea name="location_details" rows="3" placeholder="Enter address or paste Google Maps link" required></textarea>
+
                 <button type="submit" class="sos-btn">SEND FOR VERIFICATION</button>
             </form>
         </div>

@@ -4,14 +4,15 @@ let markersLayer = L.layerGroup();
 let currentPos = { lat: 22.75, lon: 88.37 }; 
 
 const manualFireStations = [
-    { name: "Barrackpore Fire Station", lat: 22.7634, lon: 88.3745, addr: "BT Rd, North 24 Pgs", phone: "033-2592-0022" },
-    { name: "Habra Fire Station", lat: 22.8465, lon: 88.6534, addr: "Habra, North 24 Pgs", phone: "03216-237101" },
-    { name: "Barasat Fire Station", lat: 22.7230, lon: 88.4870, addr: "Barasat, North 24 Pgs", phone: "033-2552-3222" },
-    { name: "Howrah Fire Station", lat: 22.5833, lon: 88.3333, addr: "G.T. Road, Howrah", phone: "033-2638-3222" }
+    { name: "Barrackpore Fire Station", lat: 22.7634, lon: 88.3745, addr: "BT Rd, North 24 Pgs", phone: "03325920022" },
+    { name: "Habra Fire Station", lat: 22.8465, lon: 88.6534, addr: "Habra, North 24 Pgs", phone: "03216237101" },
+    { name: "Barasat Fire Station", lat: 22.7230, lon: 88.4870, addr: "Barasat, North 24 Pgs", phone: "03325523222" },
+    { name: "Howrah Fire Station", lat: 22.5833, lon: 88.3333, addr: "G.T. Road, Howrah", phone: "03326383222" }
 ];
 
 const manualAmbulances = [
-    { name: "Barrackpore Municipality Ambulance", lat: 22.76, lon: 88.37, addr: "Town Hall, Barrackpore", phone: "033-2592-0405" },
+    { name: "Barrackpore Municipality Ambulance", lat: 22.76, lon: 88.37, addr: "Town Hall, Barrackpore", phone: "03325920405" },
+    { name: "B.N. Bose Hospital Ambulance", lat: 22.758, lon: 88.372, addr: "Barrackpore HQ", phone: "03325920035" },
     { name: "Kolkata Emergency Ambulance", lat: 22.57, lon: 88.43, addr: "Salt Lake", phone: "9830088888" }
 ];
 
@@ -59,12 +60,11 @@ async function searchLocation() {
 
 async function findEmergency(type) {
     const list = document.getElementById('nearby-list');
+    const sidebar = document.getElementById('main-sidebar');
     list.innerHTML = `<li class="placeholder">Searching for ${type}...</li>`;
     markersLayer.clearLayers();
 
-    let overpassType = type;
-    if (type === 'ambulance') overpassType = 'ambulance_station';
-
+    let overpassType = type === 'ambulance' ? 'ambulance_station' : type;
     const query = `[out:json];node["amenity"="${overpassType}"](around:50000,${currentPos.lat},${currentPos.lon});out;`;
     const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
 
@@ -77,7 +77,12 @@ async function findEmergency(type) {
         if (type === 'ambulance') results = [...results, ...manualAmbulances];
 
         list.innerHTML = "";
-        if (results.length === 0) { list.innerHTML = `<li class="placeholder">No ${type} found.</li>`; return; }
+        
+        if (results.length === 0) {
+            list.innerHTML = `<li class="placeholder">No results found in 50km.</li>`;
+            sidebar.classList.add('collapsed'); // Auto-shrink if empty
+            return;
+        }
 
         results.forEach(item => {
             const name = item.tags ? (item.tags.name || `Unnamed ${type}`) : item.name;
@@ -86,8 +91,8 @@ async function findEmergency(type) {
             const lat = item.lat;
             const lon = item.lon;
             
-            // FIXED DIRECTION LINK
-            const directionsUrl = `http://googleusercontent.com/maps.google.com/?q=${lat},${lon}`;
+            // Standard Working Google Maps URL
+            const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
 
             L.marker([lat, lon]).addTo(markersLayer).bindPopup(`<b>${name}</b>`);
 
@@ -106,29 +111,28 @@ async function findEmergency(type) {
     } catch (e) { console.error(e); }
 }
 
-async function sendSOS() {
-    const googleMapsUrl = `http://googleusercontent.com/maps.google.com/?q=${currentPos.lat},${currentPos.lon}`;
-    if (navigator.share) {
-        await navigator.share({ title: 'SOS', text: `Help! Location: ${googleMapsUrl}` });
-    } else {
-        window.open(`https://wa.me/?text=${encodeURIComponent(googleMapsUrl)}`, '_blank');
-    }
-}
-
 function openModal() { document.getElementById("helpModal").style.display = "block"; }
 function closeModal() { document.getElementById("helpModal").style.display = "none"; }
 
-// --- FIXED SCROLL LISTENER ---
+// Fixed Scroll Listener for shrinking sidebar
 const resultsPanel = document.getElementById('results-panel');
 const sidebar = document.getElementById('main-sidebar');
 
 resultsPanel.addEventListener('scroll', () => {
-    // If user scrolls even a little bit (10px), shrink the sidebar
     if (resultsPanel.scrollTop > 10) {
         sidebar.classList.add('collapsed');
     } else {
         sidebar.classList.remove('collapsed');
     }
 });
+
+async function sendSOS() {
+    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${currentPos.lat},${currentPos.lon}`;
+    if (navigator.share) {
+        await navigator.share({ title: 'SOS', text: `Help! My location: ${googleMapsUrl}` });
+    } else {
+        window.open(`https://wa.me/?text=${encodeURIComponent(googleMapsUrl)}`, '_blank');
+    }
+}
 
 window.onload = initMap;
