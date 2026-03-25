@@ -17,7 +17,7 @@
 body {
     font-family: 'Inter', sans-serif;
     margin: 0; padding: 0; height: 100vh;
-    display: flex; flex-direction: column; overflow: hidden; /* Desktop Lock */
+    display: flex; flex-direction: column; overflow: hidden;
     background-color: var(--bg-color); color: var(--text-primary);
 }
 
@@ -32,14 +32,12 @@ header {
 
 .main-wrapper { display: flex; flex: 1; height: calc(100vh - 60px); overflow: hidden; }
 
-/* SIDEBAR LAYOUT */
 .sidebar {
     width: 380px; height: 100%; background: var(--sidebar-bg);
     border-right: 1px solid var(--border-color); display: flex;
     flex-direction: column; z-index: 5; transition: all 0.4s ease;
 }
 
-/* SHRINK ANIMATION (Desktop Only) */
 .sidebar section { transition: all 0.4s ease; flex-shrink: 0; overflow: hidden; }
 .sidebar.collapsed h3 { height: 0; margin: 0; opacity: 0; }
 .sidebar.collapsed .search-box, .sidebar.collapsed .control-panel { padding-top: 5px; padding-bottom: 5px; }
@@ -72,7 +70,6 @@ header {
 .contribute-box { padding: 10px 15px; border-bottom: 1px solid var(--border-color); }
 .submit-btn { width: 100%; padding: 10px; border: 1px dashed var(--police-blue); background: transparent; color: var(--police-blue); border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-/* THE RESULTS SCROLLBAR AREA */
 .results-panel {
     flex: 1; padding: 15px;
     overflow-y: auto !important;
@@ -98,46 +95,16 @@ header {
 .modal-content { background: var(--sidebar-bg); margin: 10% auto; padding: 25px; border: 1px solid var(--border-color); width: 90%; max-width: 450px; border-radius: 15px; color: white; }
 .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 10px; margin-top: 10px; background: var(--bg-color); border: 1px solid var(--border-color); color: white; border-radius: 8px; box-sizing: border-box; }
 
-/* --- 📱 MOBILE SPECIFIC OVERRIDES --- */
 @media (max-width: 768px) {
-    body { overflow-y: auto; } /* UNLOCK MOBILE SCROLL */
-    
-    .main-wrapper { 
-        flex-direction: column; 
-        height: auto; 
-        overflow: visible; 
-    }
-    
-    .map-viewport { 
-        height: 350px; /* Fixed map size on mobile */
-        flex: none; 
-        order: -1; 
-    }
-    
-    .sidebar { 
-        width: 100%; 
-        height: auto; 
-        border-right: none; 
-        display: block; /* Normal block flow for mobile */
-    }
-
-    .button-group {
-        gap: 5px;
-    }
-
-    .btn {
-        padding: 8px 2px;
-        font-size: 0.65rem;
-    }
-
-    .results-panel {
-        overflow-y: visible !important; /* Let results flow naturally */
-        height: auto;
-        min-height: 400px;
-    }
+    body { overflow-y: auto; }
+    .main-wrapper { flex-direction: column; height: auto; overflow: visible; }
+    .map-viewport { height: 350px; flex: none; order: -1; }
+    .sidebar { width: 100%; height: auto; border-right: none; display: block; }
+    .button-group { gap: 5px; }
+    .btn { padding: 8px 2px; font-size: 0.65rem; }
+    .results-panel { overflow-y: visible !important; height: auto; min-height: 400px; }
 }
 
 @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
-
 .results-panel::-webkit-scrollbar { width: 6px; }
 .results-panel::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }

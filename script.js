@@ -78,7 +78,9 @@ async function findEmergency(type) {
     markersLayer.clearLayers();
 
     let overpassType = type === 'ambulance' ? 'ambulance_station' : type;
-    const query = `[out:json];node["amenity"="${overpassType}"](around:50000,${currentPos.lat},${currentPos.lon});out;`;
+    
+    // RADIUS UPDATED TO 25000 (25km)
+    const query = `[out:json];node["amenity"="${overpassType}"](around:25000,${currentPos.lat},${currentPos.lon});out;`;
     const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
 
     try {
@@ -99,7 +101,7 @@ async function findEmergency(type) {
         results.sort((a, b) => a.distance - b.distance);
 
         list.innerHTML = "";
-        if (results.length === 0) { list.innerHTML = `<li class="placeholder">No results found in 50km.</li>`; return; }
+        if (results.length === 0) { list.innerHTML = `<li class="placeholder">No results found in 25km.</li>`; return; }
 
         results.forEach(item => {
             const name = item.tags ? (item.tags.name || `Unnamed ${type}`) : item.name;
@@ -109,8 +111,8 @@ async function findEmergency(type) {
             const lon = item.lon;
             const dist = item.distance.toFixed(1);
             
-            // Standard Working Google Maps URL
-            const directionsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+            // FIXED: directionsUrl with correct backticks and ${lat}
+            const directionsUrl = `http://googleusercontent.com/maps.google.com/?q=${lat},${lon}`;
 
             L.marker([lat, lon]).addTo(markersLayer).bindPopup(`<b>${name}</b><br>${dist} km away`);
 
@@ -137,7 +139,7 @@ const resultsPanel = document.getElementById('results-panel');
 const sidebar = document.getElementById('main-sidebar');
 
 resultsPanel.addEventListener('scroll', () => {
-    if (window.innerWidth > 768) { // Only shrink on desktop
+    if (window.innerWidth > 768) { 
         if (resultsPanel.scrollTop > 10) {
             sidebar.classList.add('collapsed');
         } else {
@@ -147,7 +149,7 @@ resultsPanel.addEventListener('scroll', () => {
 });
 
 async function sendSOS() {
-    const googleMapsUrl = `https://www.google.com/maps?q=${currentPos.lat},${currentPos.lon}`;
+    const googleMapsUrl = `http://googleusercontent.com/maps.google.com/?q=${currentPos.lat},${currentPos.lon}`;
     if (navigator.share) {
         await navigator.share({ title: 'SOS', text: `Help! My location: ${googleMapsUrl}` });
     } else {
