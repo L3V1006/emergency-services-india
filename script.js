@@ -1,9 +1,8 @@
 let map;
 let centerMarker;
 let markersLayer = L.layerGroup(); 
-let currentPos = { lat: 22.75, lon: 88.37 }; // Default: Barrackpore area
+let currentPos = { lat: 22.75, lon: 88.37 }; 
 
-// 1. Verified Fire Station Data (50km Radius around Barrackpore)
 const manualFireStations = [
     { name: "Barrackpore Fire Station", lat: 22.7634, lon: 88.3745, addr: "BT Rd, North 24 Pgs" },
     { name: "Habra Fire Station", lat: 22.8465, lon: 88.6534, addr: "Habra, North 24 Pgs" },
@@ -29,23 +28,15 @@ const manualFireStations = [
     { name: "Behala Fire Station", lat: 22.4990, lon: 88.3180, addr: "Diamond Harbour Rd, Behala" }
 ];
 
-// 2. Define Red Icon for User Location
 const redIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
+    iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
 });
 
 function initMap() {
     map = L.map('map').setView([currentPos.lat, currentPos.lon], 13);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     markersLayer.addTo(map);
 
     if (navigator.geolocation) {
@@ -60,7 +51,6 @@ function initMap() {
 function updateMapToPos(label) {
     map.setView([currentPos.lat, currentPos.lon], 15);
     if (centerMarker) map.removeLayer(centerMarker);
-    
     centerMarker = L.marker([currentPos.lat, currentPos.lon], { icon: redIcon }).addTo(map)
         .bindPopup(`<b>${label}</b>`).openPopup();
 }
@@ -68,21 +58,16 @@ function updateMapToPos(label) {
 async function searchLocation() {
     const query = document.getElementById('location-input').value;
     if (!query) return;
-
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
-
     try {
         const response = await fetch(url);
         const data = await response.json();
-
         if (data.length > 0) {
             currentPos.lat = parseFloat(data[0].lat);
             currentPos.lon = parseFloat(data[0].lon);
             updateMapToPos(query);
             markersLayer.clearLayers();
             document.getElementById('nearby-list').innerHTML = `<li class="placeholder">Now select a service for ${query}.</li>`;
-        } else {
-            alert("Location not found.");
         }
     } catch (e) { console.error(e); }
 }
@@ -92,71 +77,52 @@ async function findEmergency(type) {
     list.innerHTML = `<li class="placeholder">Searching for ${type}...</li>`;
     markersLayer.clearLayers();
 
-    // RADIUS SET TO 50KM (50000 meters)
     const query = `[out:json];node["amenity"="${type}"](around:50000,${currentPos.lat},${currentPos.lon});out;`;
     const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
 
     try {
         const response = await fetch(url);
         const data = await response.json();
-        
         let results = data.elements;
-        
-        // Merge Manual Data for Fire Dept
-        if (type === 'fire_station') {
-            results = [...results, ...manualFireStations];
-        }
+        if (type === 'fire_station') results = [...results, ...manualFireStations];
 
         list.innerHTML = "";
-
-        if (results.length === 0) {
-            list.innerHTML = `<li class="placeholder">No ${type} found within 50km.</li>`;
-            return;
-        }
+        if (results.length === 0) { list.innerHTML = `<li class="placeholder">No ${type} found in 50km.</li>`; return; }
 
         results.forEach(item => {
             const name = item.tags ? (item.tags.name || "Unnamed Station") : item.name;
             const addr = item.tags ? (item.tags["addr:street"] || "Near your area") : item.addr;
             const lat = item.lat;
             const lon = item.lon;
-            
-            const directionsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+            const directionsUrl = `http://googleusercontent.com/maps.google.com/?q=${lat},${lon}`;
 
-            L.marker([lat, lon]).addTo(markersLayer)
-                .bindPopup(`<b>${name}</b><br><a href="${directionsUrl}" target="_blank" class="popup-btn" style="color:white;">Directions</a>`);
+            L.marker([lat, lon]).addTo(markersLayer).bindPopup(`<b>${name}</b><br><a href="${directionsUrl}" target="_blank" class="popup-btn" style="color:white; background:#3b82f6; padding:5px; border-radius:4px; text-decoration:none; display:inline-block; margin-top:5px;">Directions</a>`);
 
             const li = document.createElement('li');
             li.className = "result-item";
-            li.innerHTML = `
-                <strong>${name} ${item.tags ? '' : '✅'}</strong>
-                <small>${addr}</small>
-                <a href="${directionsUrl}" target="_blank" class="direction-link">📍 GET DIRECTIONS</a>
-            `;
+            li.innerHTML = `<strong>${name} ${item.tags ? '' : '✅'}</strong><small>${addr}</small><a href="${directionsUrl}" target="_blank" class="direction-link">📍 GET DIRECTIONS</a>`;
             list.appendChild(li);
         });
-    } catch (e) { 
-        console.error(e);
-        list.innerHTML = "<li class='placeholder'>Error loading data.</li>"; 
-    }
+    } catch (e) { console.error(e); }
 }
 
 async function sendSOS() {
-    const lat = currentPos.lat;
-    const lon = currentPos.lon;
-    const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
-    const messageText = `EMERGENCY! I need help. My current location is:`;
+    const googleMapsUrl = `http://googleusercontent.com/maps.google.com/?q=${currentPos.lat},${currentPos.lon}`;
+    const msg = `EMERGENCY! I need help. My current location is: ${googleMapsUrl}`;
 
     if (navigator.share) {
-        try {
-            await navigator.share({
-                title: 'SOS EMERGENCY HELP',
-                text: `${messageText} ${googleMapsUrl}`, 
-            });
-        } catch (err) { console.error('Error sharing:', err); }
+        await navigator.share({ title: 'SOS EMERGENCY', text: msg });
     } else {
-        const fullMessage = `${messageText} ${googleMapsUrl}`;
-        window.open(`https://wa.me/?text=${encodeURIComponent(fullMessage)}`, '_blank');
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     }
+}
+
+// MODAL CONTROLS
+function openModal() { document.getElementById("helpModal").style.display = "block"; }
+function closeModal() { document.getElementById("helpModal").style.display = "none"; }
+window.onclick = function(event) {
+    let modal = document.getElementById("helpModal");
+    if (event.target == modal) modal.style.display = "none";
 }
 
 window.onload = initMap;
