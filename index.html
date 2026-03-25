@@ -74,13 +74,24 @@
 
     <div id="helpModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">×</span>
+            <span class="close" onclick="closeModal()">&times;</span>
             <h2>Submit Help Location</h2>
+            <p>Help us verify and add more emergency points.</p>
             <form action="https://formspree.io/f/mjgpbank" method="POST">
+                <label>Category</label>
+                <select name="category" required>
+                    <option value="hospital">Hospital</option>
+                    <option value="police">Police Station</option>
+                    <option value="fire">Fire Dept</option>
+                    <option value="ambulance">Ambulance</option>
+                </select>
+                <label>Name</label>
                 <input type="text" name="facility_name" placeholder="Name" required>
+                <label>Phone</label>
                 <input type="tel" name="contact_phone" placeholder="Phone" required>
-                <textarea name="location_details" rows="2" placeholder="Location" required></textarea>
-                <button type="submit" class="sos-btn">SEND VERIFICATION</button>
+                <label>Location</label>
+                <textarea name="location_details" rows="2" placeholder="Address" required></textarea>
+                <button type="submit" class="sos-btn" style="width:100%; margin:15px 0 0 0;">SEND VERIFICATION</button>
             </form>
         </div>
     </div>

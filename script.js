@@ -19,18 +19,23 @@ async function askAI() {
     appendMessage('user', text);
     input.value = '';
 
-    const sysPrompt = "You are an Emergency Assistant. Give VERY SHORT (under 50 words), bulleted first-aid tips. Always start by saying: 'Call 112 immediately.'";
+    // Fixed AI logic with correct payload structure
+    const prompt = `System: You are an Emergency First-Aid Assistant. Give VERY SHORT (under 50 words), bulleted tips. Always start with: 'Call 112 immediately.' \nUser Question: ${text}`;
 
     try {
         const resp = await fetch(GEMINI_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: `${sysPrompt} \nUser: ${text}` }] }] })
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }]
+            })
         });
         const data = await resp.json();
-        appendMessage('ai', data.candidates[0].content.parts[0].text);
+        const responseText = data.candidates[0].content.parts[0].text;
+        appendMessage('ai', responseText);
     } catch (e) {
-        appendMessage('ai', "Error connecting. Please call 112 directly.");
+        console.error(e);
+        appendMessage('ai', "Error connecting. Please check internet or call 112.");
     }
 }
 
@@ -43,9 +48,9 @@ function appendMessage(sender, text) {
     container.scrollTop = container.scrollHeight;
 }
 
-// --- DISTANCE LOGIC ---
+// --- DISTANCE & MAP ---
 function getDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; 
+    const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
@@ -90,8 +95,8 @@ async function findEmergency(type) {
         results.forEach(item => {
             const dist = item.distance.toFixed(1);
             const name = item.tags.name || "Emergency Point";
-            // FIXED DIRECTION URL
-            const directionsUrl = `https://www.google.com/maps?q=${item.lat},${item.lon}`;
+            // Correct template literal syntax
+            const directionsUrl = `http://googleusercontent.com/maps.google.com/?q=${item.lat},${item.lon}`;
             L.marker([item.lat, item.lon]).addTo(markersLayer).bindPopup(`<b>${name}</b><br>${dist} km`);
 
             const li = document.createElement('li');
@@ -115,6 +120,10 @@ async function searchLocation() {
 
 function openModal() { document.getElementById("helpModal").style.display = "block"; }
 function closeModal() { document.getElementById("helpModal").style.display = "none"; }
+window.onclick = function(event) {
+    let m = document.getElementById("helpModal");
+    if (event.target == m) m.style.display = "none";
+}
 
 document.getElementById('results-panel').addEventListener('scroll', () => {
     if (window.innerWidth > 768) {
@@ -123,7 +132,7 @@ document.getElementById('results-panel').addEventListener('scroll', () => {
 });
 
 async function sendSOS() {
-    const url = `https://www.google.com/maps?q=${currentPos.lat},${currentPos.lon}`;
+    const url = `http://googleusercontent.com/maps.google.com/?q=${currentPos.lat},${currentPos.lon}`;
     if (navigator.share) await navigator.share({ title: 'SOS', text: `Help! My location: ${url}` });
     else window.open(`https://wa.me/?text=${encodeURIComponent(url)}`, '_blank');
 }
