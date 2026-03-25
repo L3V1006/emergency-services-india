@@ -94,7 +94,9 @@ async function findEmergency(type) {
             const addr = item.tags ? (item.tags["addr:street"] || "Near your area") : item.addr;
             const lat = item.lat;
             const lon = item.lon;
-            const directionsUrl = `http://googleusercontent.com/maps.google.com/?q=${lat},${lon}`;
+            
+            // --- FIXED DIRECTIONS LINK ---
+            const directionsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
 
             L.marker([lat, lon]).addTo(markersLayer).bindPopup(`<b>${name}</b><br><a href="${directionsUrl}" target="_blank" class="popup-btn" style="color:white; background:#3b82f6; padding:5px; border-radius:4px; text-decoration:none; display:inline-block; margin-top:5px;">Directions</a>`);
 
@@ -107,7 +109,8 @@ async function findEmergency(type) {
 }
 
 async function sendSOS() {
-    const googleMapsUrl = `http://googleusercontent.com/maps.google.com/?q=${currentPos.lat},${currentPos.lon}`;
+    // --- FIXED SOS LINK ---
+    const googleMapsUrl = `https://www.google.com/maps?q=${currentPos.lat},${currentPos.lon}`;
     const msg = `EMERGENCY! I need help. My current location is: ${googleMapsUrl}`;
 
     if (navigator.share) {
