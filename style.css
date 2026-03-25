@@ -11,6 +11,7 @@
     --ambulance-green: #10b981;
     --success-green: #22c55e;
     --sos-red: #dc2626;
+    --call-blue: #2563eb; /* NEW COLOR */
 }
 
 body {
@@ -40,7 +41,6 @@ header {
 
 .control-panel { padding: 15px; border-bottom: 1px solid var(--border-color); }
 
-/* Updated Grid for 4 Buttons */
 .button-group { 
     display: grid; 
     grid-template-columns: repeat(2, 1fr); 
@@ -53,7 +53,6 @@ header {
 .fire { background: var(--fire-orange); }
 .ambulance { background: var(--ambulance-green); }
 
-/* Quick Call Button */
 .quick-call-container { margin-top: 15px; }
 .call-btn {
     display: block; background: #ffffff; color: var(--ambulance-green);
@@ -70,7 +69,16 @@ header {
 
 .results-panel { flex: 1; padding: 15px; overflow-y: auto; min-height: 0; background: rgba(0,0,0,0.15); }
 .result-item { background: #1e293b; border: 1px solid var(--border-color); padding: 15px; margin-bottom: 12px; border-radius: 10px; }
-.direction-link { display: block; background: var(--success-green); color: #064e3b; text-decoration: none; padding: 10px; text-align: center; border-radius: 6px; font-weight: 800; font-size: 0.8rem; margin-top: 10px; }
+
+/* NEW: Call Now Link Button Style */
+.call-link {
+    display: block; background: var(--call-blue); color: white;
+    text-decoration: none; padding: 10px; text-align: center; border-radius: 6px;
+    font-weight: 800; font-size: 0.8rem; margin-top: 10px; border: 1px solid rgba(255,255,255,0.2);
+}
+.call-link:hover { filter: brightness(1.2); }
+
+.direction-link { display: block; background: var(--success-green); color: #064e3b; text-decoration: none; padding: 10px; text-align: center; border-radius: 6px; font-weight: 800; font-size: 0.8rem; margin-top: 8px; }
 
 .map-viewport { flex: 1; position: relative; }
 #map { height: 100%; width: 100%; }

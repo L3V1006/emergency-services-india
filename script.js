@@ -4,28 +4,22 @@ let markersLayer = L.layerGroup();
 let currentPos = { lat: 22.75, lon: 88.37 }; 
 
 const manualFireStations = [
-    { name: "Barrackpore Fire Station", lat: 22.7634, lon: 88.3745, addr: "BT Rd, North 24 Pgs" },
-    { name: "Habra Fire Station", lat: 22.8465, lon: 88.6534, addr: "Habra, North 24 Pgs" },
-    { name: "Barasat Fire Station", lat: 22.7230, lon: 88.4870, addr: "Barasat, North 24 Pgs" },
-    { name: "Naihati Fire Station", lat: 22.8913, lon: 88.4239, addr: "Naihati, North 24 Pgs" },
-    { name: "Dum Dum Fire Station", lat: 22.6215, lon: 88.3934, addr: "Dum Dum Rd, Kolkata" },
-    { name: "Bidhannagar Fire Station", lat: 22.5867, lon: 88.4170, addr: "Sector V, Salt Lake" },
-    { name: "Kolkata Fire HQ", lat: 22.5535, lon: 88.3540, addr: "Mirza Ghalib St, Kolkata" },
-    { name: "Manicktala Fire Station", lat: 22.5855, lon: 88.3794, addr: "Vip Road, Manicktala" },
-    { name: "Cossipore Fire Station", lat: 22.6175, lon: 88.3712, addr: "Cossipore Road, Kolkata" },
-    { name: "Howrah Fire Station", lat: 22.5833, lon: 88.3333, addr: "G.T. Road, Howrah" },
-    { name: "Bally Fire Station", lat: 22.6469, lon: 88.3427, addr: "Bally, Howrah" },
-    { name: "Uluberia Fire Station", lat: 22.4646, lon: 88.1064, addr: "Uluberia, Howrah" },
-    { name: "Serampore Fire Station", lat: 22.7505, lon: 88.3442, addr: "Mahesh, Serampore" },
-    { name: "Chinsurah Fire Station", lat: 22.9069, lon: 88.3912, addr: "Hooghly Ghat, Chinsurah" },
-    { name: "Chandannagar Fire Station", lat: 22.8671, lon: 88.3674, addr: "G.T. Road, Chandannagar" },
-    { name: "Dankuni Fire Station", lat: 22.6841, lon: 88.2949, addr: "Dankuni, Hooghly" },
-    { name: "Tarakeswar Fire Station", lat: 22.8860, lon: 88.0200, addr: "Tarakeswar, Hooghly" },
-    { name: "Kalyani Fire Station", lat: 22.9751, lon: 88.4345, addr: "Kalyani, Nadia" },
-    { name: "Chakdaha Fire Station", lat: 23.0800, lon: 88.5200, addr: "Chakdaha, Nadia" },
-    { name: "Sonarpur Fire Station", lat: 22.4385, lon: 88.4330, addr: "Sonarpur, South 24 Pgs" },
-    { name: "Budge Budge Fire Station", lat: 22.4820, lon: 88.1818, addr: "Budge Budge, South 24 Pgs" },
-    { name: "Behala Fire Station", lat: 22.4990, lon: 88.3180, addr: "Diamond Harbour Rd, Behala" }
+    { name: "Barrackpore Fire Station", lat: 22.7634, lon: 88.3745, addr: "BT Rd, North 24 Pgs", phone: "033-2592-0022" },
+    { name: "Habra Fire Station", lat: 22.8465, lon: 88.6534, addr: "Habra, North 24 Pgs", phone: "03216-237101" },
+    { name: "Barasat Fire Station", lat: 22.7230, lon: 88.4870, addr: "Barasat, North 24 Pgs", phone: "033-2552-3222" },
+    { name: "Naihati Fire Station", lat: 22.8913, lon: 88.4239, addr: "Naihati, North 24 Pgs", phone: "033-2581-2222" },
+    { name: "Dum Dum Fire Station", lat: 22.6215, lon: 88.3934, addr: "Dum Dum Rd, Kolkata", phone: "033-2551-3222" },
+    { name: "Bidhannagar Fire Station", lat: 22.5867, lon: 88.4170, addr: "Sector V, Salt Lake", phone: "033-2357-3222" },
+    { name: "Kolkata Fire HQ", lat: 22.5535, lon: 88.3540, addr: "Mirza Ghalib St, Kolkata", phone: "033-2252-1122" },
+    { name: "Howrah Fire Station", lat: 22.5833, lon: 88.3333, addr: "G.T. Road, Howrah", phone: "033-2638-3222" },
+    { name: "Kalyani Fire Station", lat: 22.9751, lon: 88.4345, addr: "Kalyani, Nadia", phone: "033-2582-8222" }
+];
+
+// NEW: Manual Ambulance List for your area
+const manualAmbulances = [
+    { name: "Barrackpore Municipality Ambulance", lat: 22.76, lon: 88.37, addr: "Town Hall, Barrackpore", phone: "033-2592-0405" },
+    { name: "B.N. Bose Hospital Ambulance", lat: 22.758, lon: 88.372, addr: "Barrackpore HQ", phone: "033-2592-0035" },
+    { name: "Kolkata Emergency Ambulance", lat: 22.57, lon: 88.43, addr: "Salt Lake", phone: "9830088888" }
 ];
 
 const redIcon = new L.Icon({
@@ -77,7 +71,6 @@ async function findEmergency(type) {
     list.innerHTML = `<li class="placeholder">Searching for ${type}...</li>`;
     markersLayer.clearLayers();
 
-    // Query both "ambulance" and "ambulance_station" if type is ambulance
     let overpassType = type;
     if (type === 'ambulance') overpassType = 'ambulance_station';
 
@@ -89,7 +82,9 @@ async function findEmergency(type) {
         const data = await response.json();
         let results = data.elements;
         
+        // Merge Manual Data
         if (type === 'fire_station') results = [...results, ...manualFireStations];
+        if (type === 'ambulance') results = [...results, ...manualAmbulances];
 
         list.innerHTML = "";
         if (results.length === 0) { list.innerHTML = `<li class="placeholder">No ${type} found in 50km.</li>`; return; }
@@ -97,24 +92,33 @@ async function findEmergency(type) {
         results.forEach(item => {
             const name = item.tags ? (item.tags.name || `Unnamed ${type}`) : item.name;
             const addr = item.tags ? (item.tags["addr:street"] || "Near your area") : item.addr;
+            const phone = item.tags ? (item.tags.phone || item.tags["contact:phone"] || "") : (item.phone || "");
             const lat = item.lat;
             const lon = item.lon;
             
-            // FIXED: Standard Google Maps URL
+            // FIXED URL Logic
             const directionsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
 
-            L.marker([lat, lon]).addTo(markersLayer).bindPopup(`<b>${name}</b><br><a href="${directionsUrl}" target="_blank" class="popup-btn" style="color:white; background:#3b82f6; padding:5px; border-radius:4px; text-decoration:none; display:inline-block; margin-top:5px;">Directions</a>`);
+            L.marker([lat, lon]).addTo(markersLayer).bindPopup(`<b>${name}</b>`);
 
             const li = document.createElement('li');
             li.className = "result-item";
-            li.innerHTML = `<strong>${name} ${item.tags ? '' : '✅'}</strong><small>${addr}</small><a href="${directionsUrl}" target="_blank" class="direction-link">📍 GET DIRECTIONS</a>`;
+            
+            // Logic to show CALL button only if phone exists
+            let callButton = phone ? `<a href="tel:${phone}" class="call-link">📞 CALL NOW: ${phone}</a>` : '';
+
+            li.innerHTML = `
+                <strong>${name} ${item.tags ? '' : '✅'}</strong>
+                <small>${addr}</small>
+                ${callButton}
+                <a href="${directionsUrl}" target="_blank" class="direction-link">📍 GET DIRECTIONS</a>
+            `;
             list.appendChild(li);
         });
     } catch (e) { console.error(e); }
 }
 
 async function sendSOS() {
-    // FIXED: SOS Google Maps Link
     const googleMapsUrl = `https://www.google.com/maps?q=${currentPos.lat},${currentPos.lon}`;
     const msg = `EMERGENCY! I need help. My current location is: ${googleMapsUrl}`;
 
