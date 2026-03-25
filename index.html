@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>India Emergency Hub | Desktop Edition</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">🚨 Emergency<span>Locator</span></div>
+        <div class="emergency-strip">National Emergency: 112</div>
+    </header>
+
+    <div class="main-wrapper">
+        <aside class="sidebar">
+            
+            <section class="search-box">
+                <h3>Search Location</h3>
+                <div class="search-container">
+                    <input type="text" id="location-input" placeholder="Enter city or area (e.g. Barrackpore)">
+                    <button onclick="searchLocation()" class="search-btn">🔍</button>
+                </div>
+            </section>
+
+            <section class="control-panel">
+                <h3>Select Service</h3>
+                <div class="button-group">
+                    <button onclick="findEmergency('hospital')" class="btn hospital">
+                        <span class="icon">🏥</span> Hospitals
+                    </button>
+                    <button onclick="findEmergency('police')" class="btn police">
+                        <span class="icon">🚔</span> Police
+                    </button>
+                    <button onclick="findEmergency('fire_station')" class="btn fire">
+                        <span class="icon">🚒</span> Fire Dept
+                    </button>
+                </div>
+
+                <button onclick="sendSOS()" class="sos-btn">
+                    <span class="icon">🆘</span> SOS: SHARE MY GPS
+                </button>
+            </section>
+
+            <section class="results-panel">
+                <h3 id="status-text">Nearby Facilities</h3>
+                <ul id="nearby-list">
+                    <li class="placeholder">Click a service or search a location to begin.</li>
+                </ul>
+            </section>
+        </aside>
+
+        <section class="map-viewport">
+            <div id="map"></div>
+        </section>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

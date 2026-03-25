@@ -1,0 +1,150 @@
+:root {
+    /* Professional Dark Palette */
+    --bg-color: #0f172a;       /* Midnight Blue */
+    --sidebar-bg: #1e293b;    /* Slate Blue */
+    --header-bg: #020617;     /* Deep Black */
+    --text-primary: #f8fafc;  /* Off White */
+    --text-secondary: #94a3b8; /* Muted Slate */
+    --border-color: #334155;
+    
+    /* Emergency Theme Colors */
+    --hospital-red: #ef4444;
+    --police-blue: #3b82f6;
+    --fire-orange: #f59e0b;
+    --success-green: #22c55e;
+    --sos-red: #dc2626;
+}
+
+/* 1. Global Layout */
+body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; 
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+}
+
+/* 2. Header */
+header {
+    background: var(--header-bg);
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border-color);
+    height: 60px;
+    box-sizing: border-box;
+}
+
+.logo { font-size: 1.1rem; font-weight: 800; }
+.logo span { color: var(--police-blue); }
+
+.emergency-strip {
+    background: #b91c1c;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.75rem;
+}
+
+/* 3. Main Split View */
+.main-wrapper {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* 4. Sidebar Section */
+.sidebar {
+    width: 380px; /* Fixed width for Desktop */
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    z-index: 5;
+}
+
+.search-box { padding: 15px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-color); }
+.search-container { display: flex; gap: 8px; }
+#location-input { flex: 1; background: #0f172a; color: white; border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; }
+.search-btn { background: #334155; border: none; color: white; padding: 0 15px; border-radius: 8px; cursor: pointer; }
+
+.control-panel { padding: 15px; border-bottom: 1px solid var(--border-color); }
+.button-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.btn { border: none; padding: 10px 5px; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; }
+.hospital { background: var(--hospital-red); }
+.police { background: var(--police-blue); }
+.fire { background: var(--fire-orange); }
+
+.sos-btn {
+    width: 100%; margin-top: 12px; padding: 14px; background: var(--sos-red); color: white;
+    border: none; border-radius: 10px; font-weight: 900; cursor: pointer; animation: pulse-red 2s infinite;
+}
+
+.results-panel { flex: 1; padding: 15px; overflow-y: auto; min-height: 0; background: rgba(0,0,0,0.15); }
+.result-item { background: #1e293b; border: 1px solid var(--border-color); padding: 15px; margin-bottom: 12px; border-radius: 10px; }
+.direction-link { display: block; background: var(--success-green); color: #064e3b; text-decoration: none; padding: 10px; text-align: center; border-radius: 6px; font-weight: 800; font-size: 0.8rem; margin-top: 10px; }
+
+/* 5. Map Viewport */
+.map-viewport { flex: 1; position: relative; }
+#map { height: 100%; width: 100%; }
+
+/* --- 📱 MOBILE RESPONSIVE UPDATES --- */
+@media (max-width: 768px) {
+    body {
+        overflow-y: auto; /* Allow the whole page to scroll on mobile if needed */
+    }
+
+    .main-wrapper {
+        flex-direction: column; /* Stack vertically on mobile */
+        height: auto;
+        overflow: visible;
+    }
+
+    .map-viewport {
+        height: 300px; /* Give map a fixed height at the top */
+        flex: none;
+        order: -1; /* Puts the map above the search/buttons */
+    }
+
+    .sidebar {
+        width: 100%; /* Sidebar takes full width */
+        border-right: none;
+        height: auto;
+    }
+
+    .results-panel {
+        max-height: 500px; /* Limits the list height on mobile */
+    }
+
+    .logo { font-size: 1rem; }
+    
+    header {
+        padding: 10px;
+    }
+
+    .button-group {
+        gap: 5px;
+    }
+    
+    .btn {
+        padding: 15px 5px; /* Bigger touch targets for mobile */
+    }
+}
+
+/* Animations */
+@keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(220, 38, 38, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+}
+
+/* Custom Scrollbar */
+.results-panel::-webkit-scrollbar { width: 6px; }
+.results-panel::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
