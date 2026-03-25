@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>India Emergency Hub | Desktop Edition</title>
+    <title>India Emergency Hub | AI Edition</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
 </head>
@@ -16,11 +16,10 @@
 
     <div class="main-wrapper">
         <aside class="sidebar" id="main-sidebar">
-            
             <section class="search-box">
                 <h3>Search Location</h3>
                 <div class="search-container">
-                    <input type="text" id="location-input" placeholder="Enter city or area (e.g. Barrackpore)">
+                    <input type="text" id="location-input" placeholder="Enter city or area...">
                     <button onclick="searchLocation()" class="search-btn">🔍</button>
                 </div>
             </section>
@@ -28,27 +27,15 @@
             <section class="control-panel">
                 <h3>Select Service</h3>
                 <div class="button-group">
-                    <button onclick="findEmergency('hospital')" class="btn hospital">
-                        <span class="icon">🏥</span> Hospitals
-                    </button>
-                    <button onclick="findEmergency('police')" class="btn police">
-                        <span class="icon">🚔</span> Police
-                    </button>
-                    <button onclick="findEmergency('fire_station')" class="btn fire">
-                        <span class="icon">🚒</span> Fire Dept
-                    </button>
-                    <button onclick="findEmergency('ambulance')" class="btn ambulance">
-                        <span class="icon">🚑</span> Ambulance
-                    </button>
+                    <button onclick="findEmergency('hospital')" class="btn hospital">🏥 Hospitals</button>
+                    <button onclick="findEmergency('police')" class="btn police">🚔 Police</button>
+                    <button onclick="findEmergency('fire_station')" class="btn fire">🚒 Fire Dept</button>
+                    <button onclick="findEmergency('ambulance')" class="btn ambulance">🚑 Ambulance</button>
                 </div>
-
                 <div class="quick-call-container">
                     <a href="tel:102" class="call-btn">📞 CALL AMBULANCE (102)</a>
                 </div>
-
-                <button onclick="sendSOS()" class="sos-btn">
-                    <span class="icon">🆘</span> SOS: SHARE MY GPS
-                </button>
+                <button onclick="sendSOS()" class="sos-btn">🆘 SOS: SHARE MY GPS</button>
             </section>
 
             <section class="contribute-box">
@@ -58,7 +45,7 @@
             <section class="results-panel" id="results-panel">
                 <h3 id="status-text">Nearby Facilities</h3>
                 <ul id="nearby-list">
-                    <li class="placeholder">Click a service or search a location to begin.</li>
+                    <li class="placeholder">Select a service to begin.</li>
                 </ul>
             </section>
         </aside>
@@ -68,31 +55,32 @@
         </section>
     </div>
 
+    <div id="chat-wrapper" class="chat-closed">
+        <div class="chat-header" onclick="toggleChat()">
+            <span>🤖 AI First-Aid Helper</span>
+            <button id="chat-toggle-icon">▲</button>
+        </div>
+        <div class="chat-body">
+            <div id="chat-messages">
+                <div class="message ai">I can provide first-aid guidance. What's the emergency?</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="e.g. How to stop bleeding?">
+                <button onclick="askAI()">Send</button>
+            </div>
+            <small class="ai-disclaimer">⚠️ AI is not a doctor. Call 112/102 first.</small>
+        </div>
+    </div>
+
     <div id="helpModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">×</span>
             <h2>Submit Help Location</h2>
-            <p>Help us verify and add more emergency points.</p>
-            
             <form action="https://formspree.io/f/mjgpbank" method="POST">
-                <label>Category</label>
-                <select name="category" required>
-                    <option value="hospital">Hospital (Govt/Private)</option>
-                    <option value="police">Police Station</option>
-                    <option value="fire">Fire Department</option>
-                    <option value="ambulance">Ambulance Service</option>
-                </select>
-
-                <label>Name of Facility</label>
-                <input type="text" name="facility_name" placeholder="e.g. Barrackpore Ambulance Service" required>
-
-                <label>Contact Number (Emergency Line)</label>
-                <input type="tel" name="contact_phone" placeholder="e.g. 033-XXXX-XXXX or mobile" required>
-
-                <label>Exact Location / Address</label>
-                <textarea name="location_details" rows="3" placeholder="Enter address or paste Google Maps link" required></textarea>
-
-                <button type="submit" class="sos-btn">SEND FOR VERIFICATION</button>
+                <input type="text" name="facility_name" placeholder="Name" required>
+                <input type="tel" name="contact_phone" placeholder="Phone" required>
+                <textarea name="location_details" rows="2" placeholder="Location" required></textarea>
+                <button type="submit" class="sos-btn">SEND VERIFICATION</button>
             </form>
         </div>
     </div>
