@@ -15,7 +15,6 @@ const manualFireStations = [
     { name: "Kalyani Fire Station", lat: 22.9751, lon: 88.4345, addr: "Kalyani, Nadia", phone: "033-2582-8222" }
 ];
 
-// NEW: Manual Ambulance List for your area
 const manualAmbulances = [
     { name: "Barrackpore Municipality Ambulance", lat: 22.76, lon: 88.37, addr: "Town Hall, Barrackpore", phone: "033-2592-0405" },
     { name: "B.N. Bose Hospital Ambulance", lat: 22.758, lon: 88.372, addr: "Barrackpore HQ", phone: "033-2592-0035" },
@@ -82,7 +81,6 @@ async function findEmergency(type) {
         const data = await response.json();
         let results = data.elements;
         
-        // Merge Manual Data
         if (type === 'fire_station') results = [...results, ...manualFireStations];
         if (type === 'ambulance') results = [...results, ...manualAmbulances];
 
@@ -96,15 +94,13 @@ async function findEmergency(type) {
             const lat = item.lat;
             const lon = item.lon;
             
-            // FIXED URL Logic
-            const directionsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+            const directionsUrl = `http://googleusercontent.com/maps.google.com/?q=${lat},${lon}`;
 
             L.marker([lat, lon]).addTo(markersLayer).bindPopup(`<b>${name}</b>`);
 
             const li = document.createElement('li');
             li.className = "result-item";
             
-            // Logic to show CALL button only if phone exists
             let callButton = phone ? `<a href="tel:${phone}" class="call-link">📞 CALL NOW: ${phone}</a>` : '';
 
             li.innerHTML = `
@@ -119,9 +115,8 @@ async function findEmergency(type) {
 }
 
 async function sendSOS() {
-    const googleMapsUrl = `https://www.google.com/maps?q=${currentPos.lat},${currentPos.lon}`;
+    const googleMapsUrl = `http://googleusercontent.com/maps.google.com/?q=${currentPos.lat},${currentPos.lon}`;
     const msg = `EMERGENCY! I need help. My current location is: ${googleMapsUrl}`;
-
     if (navigator.share) {
         await navigator.share({ title: 'SOS EMERGENCY', text: msg });
     } else {
@@ -135,5 +130,18 @@ window.onclick = function(event) {
     let modal = document.getElementById("helpModal");
     if (event.target == modal) modal.style.display = "none";
 }
+
+// --- NEW: SIDEBAR SCROLL LISTENER ---
+const resultsPanel = document.getElementById('results-panel');
+const sidebar = document.querySelector('.sidebar');
+
+resultsPanel.addEventListener('scroll', () => {
+    // If the user scrolls down more than 30px
+    if (resultsPanel.scrollTop > 30) {
+        sidebar.classList.add('collapsed');
+    } else {
+        sidebar.classList.remove('collapsed');
+    }
+});
 
 window.onload = initMap;

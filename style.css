@@ -11,7 +11,7 @@
     --ambulance-green: #10b981;
     --success-green: #22c55e;
     --sos-red: #dc2626;
-    --call-blue: #2563eb; /* NEW COLOR */
+    --call-blue: #2563eb;
 }
 
 body {
@@ -32,28 +32,74 @@ header {
 .emergency-strip { background: #b91c1c; padding: 5px 12px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; }
 
 .main-wrapper { display: flex; flex: 1; overflow: hidden; }
-.sidebar { width: 380px; background: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 5; }
 
+/* --- SIDEBAR & COLLAPSE LOGIC --- */
+.sidebar { 
+    width: 380px; 
+    background: var(--sidebar-bg); 
+    border-right: 1px solid var(--border-color); 
+    display: flex; 
+    flex-direction: column; 
+    z-index: 5;
+}
+
+/* Add transition to all interactive sections */
+.sidebar section {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+/* Shrink headers when collapsed */
+.sidebar.collapsed h3 {
+    height: 0;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Shrink padding when collapsed */
+.sidebar.collapsed .search-box, 
+.sidebar.collapsed .control-panel,
+.sidebar.collapsed .contribute-box {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+/* Flatten buttons when collapsed to save space */
+.sidebar.collapsed .button-group {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.sidebar.collapsed .btn {
+    padding: 8px 2px;
+    font-size: 0.6rem;
+}
+
+/* Hide SOS and Call when deep scrolling to focus on results */
+.sidebar.collapsed .sos-btn,
+.sidebar.collapsed .quick-call-container {
+    height: 0;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Standard states */
 .search-box { padding: 15px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-color); }
 .search-container { display: flex; gap: 8px; }
 #location-input { flex: 1; background: #0f172a; color: white; border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; outline: none; }
 .search-btn { background: #334155; border: none; color: white; padding: 0 15px; border-radius: 8px; cursor: pointer; }
 
 .control-panel { padding: 15px; border-bottom: 1px solid var(--border-color); }
-
-.button-group { 
-    display: grid; 
-    grid-template-columns: repeat(2, 1fr); 
-    gap: 10px; 
-}
-
-.btn { border: none; padding: 12px 5px; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; }
+.button-group { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.btn { border: none; padding: 12px 5px; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
 .hospital { background: var(--hospital-red); }
 .police { background: var(--police-blue); }
 .fire { background: var(--fire-orange); }
 .ambulance { background: var(--ambulance-green); }
 
-.quick-call-container { margin-top: 15px; }
+.quick-call-container { margin-top: 15px; transition: 0.3s; }
 .call-btn {
     display: block; background: #ffffff; color: var(--ambulance-green);
     text-decoration: none; text-align: center; padding: 12px; border-radius: 10px;
@@ -61,7 +107,7 @@ header {
 }
 .call-btn:hover { background: var(--ambulance-green); color: white; }
 
-.sos-btn { width: 100%; margin-top: 12px; padding: 14px; background: var(--sos-red); color: white; border: none; border-radius: 10px; font-weight: 900; cursor: pointer; animation: pulse-red 2s infinite; }
+.sos-btn { width: 100%; margin-top: 12px; padding: 14px; background: var(--sos-red); color: white; border: none; border-radius: 10px; font-weight: 900; cursor: pointer; animation: pulse-red 2s infinite; transition: 0.3s; }
 
 .contribute-box { padding: 10px 15px; border-bottom: 1px solid var(--border-color); }
 .submit-btn { width: 100%; padding: 10px; border: 1px dashed var(--police-blue); background: transparent; color: var(--police-blue); border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
@@ -70,14 +116,11 @@ header {
 .results-panel { flex: 1; padding: 15px; overflow-y: auto; min-height: 0; background: rgba(0,0,0,0.15); }
 .result-item { background: #1e293b; border: 1px solid var(--border-color); padding: 15px; margin-bottom: 12px; border-radius: 10px; }
 
-/* NEW: Call Now Link Button Style */
 .call-link {
     display: block; background: var(--call-blue); color: white;
     text-decoration: none; padding: 10px; text-align: center; border-radius: 6px;
     font-weight: 800; font-size: 0.8rem; margin-top: 10px; border: 1px solid rgba(255,255,255,0.2);
 }
-.call-link:hover { filter: brightness(1.2); }
-
 .direction-link { display: block; background: var(--success-green); color: #064e3b; text-decoration: none; padding: 10px; text-align: center; border-radius: 6px; font-weight: 800; font-size: 0.8rem; margin-top: 8px; }
 
 .map-viewport { flex: 1; position: relative; }
