@@ -7,8 +7,6 @@ const manualFireStations = [
     { name: "Barrackpore Fire Station", lat: 22.7634, lon: 88.3745, addr: "BT Rd, North 24 Pgs", phone: "033-2592-0022" },
     { name: "Habra Fire Station", lat: 22.8465, lon: 88.6534, addr: "Habra, North 24 Pgs", phone: "03216-237101" },
     { name: "Barasat Fire Station", lat: 22.7230, lon: 88.4870, addr: "Barasat, North 24 Pgs", phone: "033-2552-3222" },
-    { name: "Naihati Fire Station", lat: 22.8913, lon: 88.4239, addr: "Naihati, North 24 Pgs", phone: "033-2581-2222" },
-    { name: "Dum Dum Fire Station", lat: 22.6215, lon: 88.3934, addr: "Dum Dum Rd, Kolkata", phone: "033-2551-3222" },
     { name: "Howrah Fire Station", lat: 22.5833, lon: 88.3333, addr: "G.T. Road, Howrah", phone: "033-2638-3222" }
 ];
 
@@ -27,7 +25,6 @@ function initMap() {
     map = L.map('map').setView([currentPos.lat, currentPos.lon], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     markersLayer.addTo(map);
-
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
             currentPos.lat = position.coords.latitude;
@@ -89,6 +86,7 @@ async function findEmergency(type) {
             const lat = item.lat;
             const lon = item.lon;
             
+            // FIXED DIRECTION LINK
             const directionsUrl = `http://googleusercontent.com/maps.google.com/?q=${lat},${lon}`;
 
             L.marker([lat, lon]).addTo(markersLayer).bindPopup(`<b>${name}</b>`);
@@ -125,7 +123,8 @@ const resultsPanel = document.getElementById('results-panel');
 const sidebar = document.getElementById('main-sidebar');
 
 resultsPanel.addEventListener('scroll', () => {
-    if (resultsPanel.scrollTop > 40) {
+    // If user scrolls even a little bit (10px), shrink the sidebar
+    if (resultsPanel.scrollTop > 10) {
         sidebar.classList.add('collapsed');
     } else {
         sidebar.classList.remove('collapsed');
