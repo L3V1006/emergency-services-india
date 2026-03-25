@@ -22,6 +22,18 @@ const redIcon = new L.Icon({
     iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
 });
 
+// --- NEW: Haversine Distance Calculator ---
+function getDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; 
+}
+
 function initMap() {
     map = L.map('map').setView([currentPos.lat, currentPos.lon], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
@@ -76,11 +88,20 @@ async function findEmergency(type) {
         if (type === 'fire_station') results = [...results, ...manualFireStations];
         if (type === 'ambulance') results = [...results, ...manualAmbulances];
 
+        // --- CALC DISTANCE & SORT ---
+        results = results.map(item => {
+            return {
+                ...item,
+                distance: getDistance(currentPos.lat, currentPos.lon, item.lat, item.lon)
+            };
+        });
+        results.sort((a, b) => a.distance - b.distance);
+
         list.innerHTML = "";
         
         if (results.length === 0) {
             list.innerHTML = `<li class="placeholder">No results found in 50km.</li>`;
-            sidebar.classList.add('collapsed'); // Auto-shrink if empty
+            sidebar.classList.add('collapsed');
             return;
         }
 
@@ -90,17 +111,19 @@ async function findEmergency(type) {
             const phone = item.tags ? (item.tags.phone || item.tags["contact:phone"] || "") : (item.phone || "");
             const lat = item.lat;
             const lon = item.lon;
+            const dist = item.distance.toFixed(1); // 1 decimal place
             
-            // Standard Working Google Maps URL
-            const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+            // FIXED DIRECTION LINK: No more 4{lat} bug
+            const directionsUrl = `http://googleusercontent.com/maps.google.com/?q=${lat},${lon}`;
 
-            L.marker([lat, lon]).addTo(markersLayer).bindPopup(`<b>${name}</b>`);
+            L.marker([lat, lon]).addTo(markersLayer).bindPopup(`<b>${name}</b><br>${dist} km away`);
 
             const li = document.createElement('li');
             li.className = "result-item";
             let callBtn = phone ? `<a href="tel:${phone}" class="call-link">📞 CALL: ${phone}</a>` : '';
 
             li.innerHTML = `
+                <div class="distance-badge">📍 ${dist} km away</div><br>
                 <strong>${name} ${item.tags ? '' : '✅'}</strong>
                 <small>${addr}</small>
                 ${callBtn}
@@ -114,7 +137,6 @@ async function findEmergency(type) {
 function openModal() { document.getElementById("helpModal").style.display = "block"; }
 function closeModal() { document.getElementById("helpModal").style.display = "none"; }
 
-// Fixed Scroll Listener for shrinking sidebar
 const resultsPanel = document.getElementById('results-panel');
 const sidebar = document.getElementById('main-sidebar');
 
@@ -127,7 +149,7 @@ resultsPanel.addEventListener('scroll', () => {
 });
 
 async function sendSOS() {
-    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${currentPos.lat},${currentPos.lon}`;
+    const googleMapsUrl = `http://googleusercontent.com/maps.google.com/?q=${currentPos.lat},${currentPos.lon}`;
     if (navigator.share) {
         await navigator.share({ title: 'SOS', text: `Help! My location: ${googleMapsUrl}` });
     } else {

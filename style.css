@@ -31,7 +31,6 @@ header {
 
 .main-wrapper { display: flex; flex: 1; height: calc(100vh - 60px); overflow: hidden; }
 
-/* SIDEBAR & SHRINK ANIMATION */
 .sidebar { 
     width: 380px; height: 100%; background: var(--sidebar-bg); 
     border-right: 1px solid var(--border-color); display: flex; 
@@ -40,7 +39,6 @@ header {
 
 .sidebar section { transition: all 0.4s ease; flex-shrink: 0; overflow: hidden; }
 
-/* Collapsed State Styles */
 .sidebar.collapsed h3 { height: 0; margin: 0; opacity: 0; }
 .sidebar.collapsed .search-box, .sidebar.collapsed .control-panel { padding-top: 5px; padding-bottom: 5px; }
 .sidebar.collapsed .button-group { grid-template-columns: repeat(4, 1fr); gap: 5px; }
@@ -70,16 +68,29 @@ header {
 .contribute-box { padding: 10px 15px; border-bottom: 1px solid var(--border-color); }
 .submit-btn { width: 100%; padding: 10px; border: 1px dashed var(--police-blue); background: transparent; color: var(--police-blue); border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-/* RESULTS PANEL SCROLLBAR FIX */
 .results-panel { 
     flex: 1; padding: 15px; 
-    overflow-y: scroll !important; /* Force scrollbar */
+    overflow-y: scroll !important; 
     background: rgba(0,0,0,0.15); 
     min-height: 0; 
 }
-#nearby-list { margin: 0; padding: 0; list-style: none; min-height: 110%; /* Always allow a little scroll */ }
+#nearby-list { margin: 0; padding: 0; list-style: none; min-height: 110%; }
 
 .result-item { background: #1e293b; border: 1px solid var(--border-color); padding: 15px; margin-bottom: 12px; border-radius: 10px; }
+
+/* NEW: Distance Badge Style */
+.distance-badge {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    padding: 3px 10px;
+    border-radius: 5px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 8px;
+    border: 1px solid var(--border-color);
+}
+
 .call-link { display: block; background: var(--call-blue); color: white; text-decoration: none; padding: 10px; text-align: center; border-radius: 6px; font-weight: 800; font-size: 0.8rem; margin-top: 10px; }
 .direction-link { display: block; background: #22c55e; color: #064e3b; text-decoration: none; padding: 10px; text-align: center; border-radius: 6px; font-weight: 800; font-size: 0.8rem; margin-top: 8px; }
 
@@ -90,7 +101,6 @@ header {
 .modal-content { background: var(--sidebar-bg); margin: 10% auto; padding: 25px; border: 1px solid var(--border-color); width: 90%; max-width: 450px; border-radius: 15px; color: white; }
 .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 10px; margin-top: 10px; background: var(--bg-color); border: 1px solid var(--border-color); color: white; border-radius: 8px; box-sizing: border-box; }
 
-/* Custom Scrollbar */
 .results-panel::-webkit-scrollbar { width: 8px; }
 .results-panel::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
 .results-panel::-webkit-scrollbar-thumb { background: var(--police-blue); border-radius: 10px; }
