@@ -79,7 +79,6 @@ async function findEmergency(type) {
 
     let overpassType = type === 'ambulance' ? 'ambulance_station' : type;
     
-    // RADIUS UPDATED TO 25000 (25km)
     const query = `[out:json];node["amenity"="${overpassType}"](around:25000,${currentPos.lat},${currentPos.lon});out;`;
     const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
 
@@ -91,7 +90,6 @@ async function findEmergency(type) {
         if (type === 'fire_station') results = [...results, ...manualFireStations];
         if (type === 'ambulance') results = [...results, ...manualAmbulances];
 
-        // Calc Distance and Sort
         results = results.map(item => {
             return {
                 ...item,
@@ -111,7 +109,6 @@ async function findEmergency(type) {
             const lon = item.lon;
             const dist = item.distance.toFixed(1);
             
-            // FIXED: directionsUrl with correct backticks and ${lat}
             const directionsUrl = `http://googleusercontent.com/maps.google.com/?q=${lat},${lon}`;
 
             L.marker([lat, lon]).addTo(markersLayer).bindPopup(`<b>${name}</b><br>${dist} km away`);

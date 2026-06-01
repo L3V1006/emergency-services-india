@@ -16,7 +16,7 @@
 
     <div class="main-wrapper">
         <aside class="sidebar" id="main-sidebar">
-            
+
             <section class="search-box">
                 <h3>Search Location</h3>
                 <div class="search-container">
@@ -73,7 +73,6 @@
             <span class="close" onclick="closeModal()">×</span>
             <h2>Submit Help Location</h2>
             <p>Help us verify and add more emergency points.</p>
-            
             <form action="https://formspree.io/f/mjgpbank" method="POST">
                 <label>Category</label>
                 <select name="category" required>
@@ -82,22 +81,60 @@
                     <option value="fire">Fire Department</option>
                     <option value="ambulance">Ambulance Service</option>
                 </select>
-
                 <label>Name of Facility</label>
                 <input type="text" name="facility_name" placeholder="e.g. Barrackpore Ambulance Service" required>
-
                 <label>Contact Number (Emergency Line)</label>
                 <input type="tel" name="contact_phone" placeholder="e.g. 033-XXXX-XXXX or mobile" required>
-
                 <label>Exact Location / Address</label>
                 <textarea name="location_details" rows="3" placeholder="Enter address or paste Google Maps link" required></textarea>
-
                 <button type="submit" class="sos-btn">SEND FOR VERIFICATION</button>
             </form>
         </div>
     </div>
 
+    <button id="ai-fab">
+        <span class="fab-icon">🤖</span>
+        <span class="fab-label">AI Help</span>
+    </button>
+
+    <div id="ai-chat-panel">
+        <div class="ai-chat-header">
+            <div class="ai-header-left">
+                <div class="ai-avatar-circle">🤖</div>
+                <div class="ai-header-text">
+                    <div class="ai-name">Emergency Assistant</div>
+                    <div class="ai-status" id="ai-status">Online</div>
+                </div>
+            </div>
+            <button class="ai-header-close" id="ai-close-btn">✕</button>
+        </div>
+
+        <div class="ai-messages" id="ai-messages">
+            <div class="ai-msg bot">
+                <div class="msg-bubble">
+                    👋 Hello! I'm your Emergency Assistant.<br><br>
+                    I can help with:<br>
+                    • Emergency numbers in India<br>
+                    • First aid guidance (CPR, burns, etc.)<br>
+                    • How to use this app
+                </div>
+            </div>
+        </div>
+
+        <div class="ai-chips" id="ai-chips">
+            <button class="ai-chip" id="chip1">🇮🇳 All India emergency numbers</button>
+            <button class="ai-chip" id="chip2">❤️ Heart attack first aid</button>
+            <button class="ai-chip" id="chip3">🆘 How to use SOS</button>
+        </div>
+
+        <div class="ai-input-row">
+            <input type="text" id="ai-user-input" placeholder="Ask about emergencies..." />
+            <button class="ai-send-btn" id="ai-send-btn">➤</button>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="script.js"></script>
+    <script src="ai-assistant.js"></script>
 </body>
 </html>
