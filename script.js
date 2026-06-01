@@ -109,7 +109,8 @@ async function findEmergency(type) {
             const lon = item.lon;
             const dist = item.distance.toFixed(1);
             
-            const directionsUrl = `http://googleusercontent.com/maps.google.com/?q=${lat},${lon}`;
+            // FIXED: Using stable official maps routing syntax
+            const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`;
 
             L.marker([lat, lon]).addTo(markersLayer).bindPopup(`<b>${name}</b><br>${dist} km away`);
 
@@ -146,7 +147,8 @@ resultsPanel.addEventListener('scroll', () => {
 });
 
 async function sendSOS() {
-    const googleMapsUrl = `http://googleusercontent.com/maps.google.com/?q=${currentPos.lat},${currentPos.lon}`;
+    // FIXED: Correct maps redirection mapping for SOS sharing feature
+    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${currentPos.lat},${currentPos.lon}`;
     if (navigator.share) {
         await navigator.share({ title: 'SOS', text: `Help! My location: ${googleMapsUrl}` });
     } else {
